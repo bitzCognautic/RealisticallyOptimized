@@ -1,0 +1,8 @@
+option.BORDER_EXPERIMENTAL=Borders (Experimental)
+option.BORDER_EXPERIMENTAL.comment=Toggles white cartoon borders.
+option.OUTLINE_WIDTH=Border Width
+option.OUTLINE_WIDTH.comment=Thickness of border lines.
+option.OUTLINE_BRIGHTNESS=Border Brightness
+option.OUTLINE_BRIGHTNESS.comment=Intensity of white border lines.
+option.GLOWING_ORE_MULT=Ore Glow Strength
+option.GLOWING_ORE_MULT.comment=Determines emission strength of glowing ores.
