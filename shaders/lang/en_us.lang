@@ -1,7 +1,3 @@
-option.GOD_RAYS_STEPS=God Rays Quality
-option.GOD_RAYS_STEPS.comment=Number of ray marching steps. Higher = smoother rays, lower FPS.
-option.GOD_RAYS_STRENGTH=God Rays Intensity
-option.GOD_RAYS_STRENGTH.comment=How strongly sun rays brighten the scene.
 option.BORDER_EXPERIMENTAL=Borders (Experimental)
 option.BORDER_EXPERIMENTAL.comment=Toggles white cartoon borders.
 option.OUTLINE_WIDTH=Border Width
