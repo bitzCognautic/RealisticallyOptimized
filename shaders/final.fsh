@@ -1,6 +1,5 @@
 #version 120
 
-// Shader options (Iris/OptiFine style)
 #define OUTLINE_WIDTH 1 // [1 2 3 4]
 #define OUTLINE_BRIGHTNESS 1.50 // [0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00 4.00]
 #define BORDER_EXPERIMENTAL
@@ -20,6 +19,10 @@ uniform float rainStrength;
 
 float getLinearDepth(float depth) {
     return (2.0 * near) / (far + near - depth * (far - near));
+}
+
+vec3 tonemapReinhard(vec3 c) {
+    return c / (c + vec3(1.0));
 }
 
 const vec2 worldOutlineOffset[4] = vec2[4](
@@ -57,34 +60,36 @@ void doWorldOutline(inout vec3 color, float linearZ0) {
     float outline = (0.35 * (outlinea * outlineb) + 0.65) * (0.75 * (1.0 - outlined) * outlinec + 1.0);
     outline -= 1.0;
 
-    outline *= OUTLINE_BRIGHTNESS / max(float(int(OUTLINE_WIDTH)), 1.0);
+    outline *= OUTLINE_BRIGHTNESS / max(float(OUTLINE_WIDTH), 1.0);
     if (outline < 0.0) outline = -outline * 0.25;
 
-    color += min(color * outline * 2.5, vec3(outline));
+    color += min(color * outline * 2.5, vec3(max(outline, 0.0)));
 }
 
 void main() {
     vec4 col = texture2D(colortex0, vTex);
-    col.rgb = applyVibrance(col.rgb, VIBRANCE + 0.15);
     float t = dayFactor(worldTime);
-
-    #ifdef BORDER_EXPERIMENTAL
-        float linearZ0 = getLinearDepth(texture2D(depthtex0, vTex).r);
-        doWorldOutline(col.rgb, linearZ0);
-    #endif
 
     float rawDepth = texture2D(depthtex0, vTex).r;
     float skyMask = step(0.99995, rawDepth);
-    float skyBoost = mix(1.42, 1.24, t);
+
+    #ifdef BORDER_EXPERIMENTAL
+        float linearZ0 = getLinearDepth(rawDepth);
+        doWorldOutline(col.rgb, linearZ0);
+    #endif
+
+    col.rgb = applyVibrance(col.rgb, VIBRANCE + 0.15);
+
+    col.rgb = tonemapReinhard(col.rgb);
+
+    float skyBoost = mix(1.35, 1.20, t);
     col.rgb *= mix(1.0, skyBoost, skyMask);
 
-    // Darker nights without crushing daytime contrast.
-    col.rgb *= mix(0.62, 1.0, t);
+    col.rgb *= mix(0.65, 1.0, t);
 
-    // Cooler grading during rain and at night.
     float blueFactor = clamp((1.0 - t) * 0.70 + rainStrength * 0.55, 0.0, 1.0);
     vec3 blueTint = vec3(0.86, 0.94, 1.16);
-    col.rgb *= mix(vec3(1.0), blueTint, blueFactor * 0.55);
+    col.rgb *= mix(vec3(1.0), blueTint, blueFactor * 0.50);
 
     gl_FragColor = col;
 }
