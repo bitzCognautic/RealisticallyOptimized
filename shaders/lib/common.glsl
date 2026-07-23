@@ -20,10 +20,10 @@
 #define GLOWING_ORE_MULT 1.00 // [0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.10 1.20 1.30 1.40 1.50 1.60 1.70 1.80 1.90 2.00]
 #endif
 #ifndef GOD_RAYS_STEPS
-#define GOD_RAYS_STEPS 12
+#define GOD_RAYS_STEPS 8
 #endif
 #ifndef GOD_RAYS_STRENGTH
-#define GOD_RAYS_STRENGTH 0.15
+#define GOD_RAYS_STRENGTH 0.12
 #endif
 float toonRamp(float x) {
     float steps = max(1.0, TOON_STEPS);
