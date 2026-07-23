@@ -1,7 +1,7 @@
 #version 120
 
 #define GOD_RAYS_STEPS 12 // [4 6 8 10 12 16 20 24]
-#define GOD_RAYS_STRENGTH 0.30 // [0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.60 0.70 0.80 0.90 1.00]
+#define GOD_RAYS_STRENGTH 0.15 // [0.05 0.08 0.10 0.12 0.15 0.18 0.20 0.25 0.30 0.35 0.40 0.50 0.60 0.80 1.00]
 
 varying vec2 texCoord;
 
@@ -9,8 +9,6 @@ uniform sampler2D colortex0;
 uniform sampler2D depthtex0;
 uniform mat4 gbufferProjection;
 uniform vec3 sunPosition;
-uniform float viewWidth;
-uniform float viewHeight;
 uniform float worldTime;
 uniform float rainStrength;
 
@@ -58,10 +56,11 @@ void main() {
     vec3 color = texture2D(colortex0, texCoord).rgb;
     float depth = texture2D(depthtex0, texCoord).r;
 
-    vec4 sunClip = gbufferProjection * vec4(sunPosition, 1.0);
-    if (sunClip.z > 0.0) {
-        vec2 sunUV = sunClip.xy / sunClip.w * 0.5 + 0.5;
-        if (sunUV.x > -0.05 && sunUV.x < 1.05 && sunUV.y > -0.05 && sunUV.y < 1.05) {
+    if (depth < 0.9999) {
+        vec4 sunClip = gbufferProjection * vec4(sunPosition, 1.0);
+        if (sunClip.z > 0.0 && sunClip.w > 0.001) {
+            vec2 sunUV = sunClip.xy / sunClip.w * 0.5 + 0.5;
+            sunUV = clamp(sunUV, 0.001, 0.999);
             color += godRays(texCoord, sunUV);
         }
     }
